@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pj-ph Score Calculator</title>
+    <style>
+        body{font-family:sans-serif;max-width:1000px;margin:auto;padding:20px;background:#181818;color:#fff}
+        .panel{display:grid;gap:8px;margin-top:12px;}
+        select,input,button{padding:8px}
+        #result,#ap,#target,#best{margin:10px 0;font-size:1.1em}
+        #settings-btn{position:fixed;top:16px;right:16px;z-index:50;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-dim);cursor:pointer;font-size:16px;transition:all .2s}
+        .mclose{float:right;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:0;line-height:1;margin-top:-4px}
+        .setting{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);justify-content:center;align-items:center;}
+        .setting-content{width:400px;max-width:90vw;background:#11142b;padding:20px;border-radius:16px;}
+        .tuika{display:none;position:fixed;inset:0;justify-content:center;align-items:center;}
+        .tuika-content{width:400px;max-width:90vw;background:#11142b;padding:20px;border-radius:16px;}
+        .full{width:100%;}
+        .row{display:grid;grid-template-columns:50% 50%;gap: 12px;margin-top:12px;width:96.5%;}
+        .row2{display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:12px;}
+        .add-btn{white-space: nowrap;min-width: 70px;}
+        input{min-width:0;}
+    </style>
+</head>
+<body>
+    <h1>Pj-ph Score Calculator</h1>
+
+    <div class="panel">
+        <select id="diff"></select>
+        <select id="level"></select>
+        <select id="music"></select>
+        <input id="ma_h" type="number" placeholder="Max Combo">
+        <input id="pa_h" type="number" placeholder="Parfect">
+        <input id="gr_h" type="number" placeholder="Great">
+        <button onclick="calc_ca()">calculation</button>
+    </div>
+
+    <div id="result"></div>
+
+    <button id="settings-btn" onclick="openSettings()">&#x2699;</button>
+
+    <div id="setting" class="setting"><!-- //設定タブ -->
+        <div class="setting-content">
+            <button class="mclose" onclick="closeSettings()">&#x2715;</button>
+            <h2>設定</h2>
+            <div class="row">
+                <button onclick="opentuika()">追加</button>
+                <button onclick="opensakuzyo()">削除</button>
+            </div>
+            <div class="panel"><button onclick="openpas()" >パスワード変更</button></div>
+        </div>
+    </div>
+
+    <div id="tuika" class="tuika"><!-- //楽曲追加タブ -->
+        <div class="tuika-content">
+            <button class="mclose" onclick="closetuika()">&#x2715;</button>
+            <h2>楽曲追加</h2>
+            <div class="panel">
+                <select id="diff">
+                    <option value="expart">expart</option>
+                    <option value="master">master</option>
+                    <option value="append">append</option>
+                </select>
+            </div>
+            <div class="row">
+                <input class="minput" id="alevel" type="number" placeholder="難易度">
+                <input class="minput" id="asong" placeholder="曲名">
+            </div>
+            <div class="row2">
+                <input placeholder="Full combo">
+                <button class="add-btn">追加</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+let data = [
+    [
+        ["expert"],
+        [30,[["初音ミクの消失",751],["初音ミクの激唱",760],["腐れ外道とチョコレゐト",698],["don't fight the music",772],["foren",696],["MarbleBlue.",718]]],
+        [31,[["What's up? Pop!",902],["ヤミナベ!!!!",769],["人生",720],["おぎゃりないざー",693],["ダイジョウブですか？",747],["メモリア",818],["0.0000034",817],["初音狂奏曲第01番「彗惺」",790],["マシンガンポエムドール",865],["嬢王",633],["ネクラチューンサーカス",690],["エンドマークに希望と涙を添えて",776],["the EnpErroR",611]]],
+        [32,[["怪獣になりたい",800]]]
+    ],
+    [
+        ["master"],
+        [33,[["超最終鬼畜妹フランドール・S",1010],["初音天地開闘神話",760],["ぼくらの16bit戦争",733],["プラネットヒーロー",910],["SAN値直葬",734],["トレジャーガーデン",670],["Internet Junk Junkie",731],["天藍のアイスヘヴン",578],["ロストワンの号哭",736],["嬢王",728],["生命性シンドロウム",746],["MarbleBlue.",730],["超ナイト・オブ・ナイツ",701]]],
+        [34,[["初音ミクの激唱",871],["おぎゃりないざー",818],["ダイジョウブですか？",837],["メモリア",885],["0.0000034",967],["初音狂奏曲第01番「彗惺」",1012],["ÅMARA",794],["ネクラチューンサーカス",956]]],
+        [35,[["初音ミクの消失",833],["腐れ外道とチョコレゐト",881],["六兆年と一夜物語",644],["マシンガンポエムドール",909],["怪獣になりたい",950],["エンドマークに希望と涙を添えて",974],["don't fight the music",944]]],
+        [36,[["the EnpErroR",796]]],
+        [37,[["What's up? Pop!",1181],["ヤミナベ!!!!",1007],["人生",1121]]]
+    ],
+    [
+        ["append"],
+        [31,[["千本桜",615],["一千光年",748],["ビバハピ",442],["ミルククラウン・オン・ソーネチカ",747],["フェレス",872],["テレキャスタービーボーイ",579],["ジェヘナ",816],["Bad Apple!! feat.SEKAI",664],["ステラ",776],["てらてら",725],["ショウタイム・ルーラー",581],["オペラ！スペースオペラ！",701],["バグ",745],["熱風",603],["ペンタトニック",644]]],
+        [32,[["Help me ERINNNNNN!!",782],["地球最後の告白を",821],["とうほう☆ワンダーランド",744],["ノンブレス・オブリージュ",643],["スーサイドパレヱド",746],["生きる",565],["RAD DOGS",667],["アクセラレイト",563],["88☆彡",694],["Journey",882],["NEO",632]]],
+        [33,[["ドーナツホール 2024",896],["ONESELF",703],["アンヘル",751],["のだ",673],["チルノのパーフェクトさんすう教室",799],["カゲロウデイズ",957],["snooze",717],["混沌ブギ",807],["キラー",633],["トンデモワンダーズ",815],["Iなんです",786]]],
+        [34,[["プロとディスコ",702],["ヒバナ -Reloaded-",675],["東京テディベア",1012],["フュージョン",777]]],
+        [35,[["Brand New Day",947],["IMAWANOKIWA",986],["六兆年と一夜物語",861],["foren",897],["最終鬼畜妹フランドール・S",957]]],
+        [36,[["SAN値直葬",1030],["嬢王",986],["生命性シンドロウム",1178],["Sage",906],["超ナイト・オブ・ナイツ",891]]],
+        [37,[["おぎゃりないざー",1025],["ダイジョウブですか？",1277],["メモリア",1058],["0.0000034",1167],["初音狂奏曲第01番「彗惺」",1293],["ネクラチューンサーカス",1086],["MarbleBiue.",1250]]],
+        [38,[["怪獣になりたい",1800]]]
+    ],
+    [
+        "0000","0000"
+    ]
+];
+
+
+const setting = document.getElementById("setting");
+const tuika = document.getElementById("tuika");
+const diff = document.getElementById("diff");
+const level = document.getElementById("level");
+const music = document.getElementById("music");
+
+function openSettings(){setting.style.display = "flex";};
+function closeSettings(){setting.style.display = "none";};
+
+function opentuika(){tuika.style.display = "flex";};
+function closetuika(){tuika.style.display = "none";};
+
+let diff_0 = []
+let level_0 = []
+let music_0 = []
+let combo_0 = []
+
+const result = [];
+
+for(let i=0;i<3;i++){
+    const diff_1 = data[i].map(x => x[0]);
+    diff_0.push(diff_1[0])
+}
+
+const diff_li = document.getElementById("diff");
+diff_li.options.length = 0;
+diff_0.forEach(i => {
+    diff_li.add(new Option(i, i));
+});
+level_setup()
+music_setup()
+
+
+
+function level_setup(){
+    level.options.length = 0;
+    let diff_le=diff.selectedIndex
+    for (let i=0;i<3;i++){
+        if (diff_le==i){
+            const level_0 = data[diff_le].map(x => x[0]);
+            level_0.splice(0, 1);
+            const level_li = document.getElementById("level");
+            level_0.forEach(i => {
+                level_li.add(new Option(i, i));
+            });
+        }
+    }
+}
+
+function music_setup(){
+    music.options.length = 0;
+    let diff_mu=diff.selectedIndex
+    let level_mu=level.selectedIndex
+    for(let k=0;k<3;k++){
+        if (diff_mu==k){
+            for(let i=0;i<(data[k].length-1);i++){
+                if(level_mu==i){
+                    const music_0 = data[k][i+1][1].map(x => x[0]);
+                    const music_mu = document.getElementById("music");
+                    music_0.forEach(i => {
+                        music_mu.add(new Option(i, i));
+                    });
+                }
+            }
+        }
+    }
+}
+
+diff.addEventListener("change", () => {
+    level_setup();
+    music_setup();
+});
+
+level.addEventListener("change", () => {
+    music_setup();
+});
+
+function calc_ca(){
+let fu=data[diff.selectedIndex][level.selectedIndex+1][1][music.selectedIndex][1]
+let ma=Number(ma_h.value)||0
+let pa=Number(pa_h.value)||0
+let gr=Number(gr_h.value)||0
+
+score=(5/fu)*(9*(pa+gr*0.65)+ma)
+if (score>=100) {
+    score=100
+    hantei=0
+}else if (score>=96) {
+    hantei=1
+}else if (score>=92) {
+    hantei=2
+}else if (score>=88) {
+    hantei=3
+}else if (score>=82) {
+    hantei=4
+}else if (score>=70) {
+    hantei=5        
+}else{
+    hantei=6
+}
+
+score=Math.round(10000*score);
+let hantei_0=["φ","V","S","A","B","C","F"]
+const result = document.getElementById("result");
+result.textContent=`スコア: ${score} (${hantei_0[hantei]})`;
+}
+</script>
+</body>
+</html>
