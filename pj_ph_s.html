@@ -9,17 +9,6 @@
         .panel{display:grid;gap:8px;margin-top:12px;}
         select,input,button{padding:8px}
         #result,#ap,#target,#best{margin:10px 0;font-size:1.1em}
-        #settings-btn{position:fixed;top:16px;right:16px;z-index:50;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-dim);cursor:pointer;font-size:16px;transition:all .2s}
-        .mclose{float:right;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:0;line-height:1;margin-top:-4px}
-        .setting{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);justify-content:center;align-items:center;}
-        .setting-content{width:400px;max-width:90vw;background:#11142b;padding:20px;border-radius:16px;}
-        .tuika{display:none;position:fixed;inset:0;justify-content:center;align-items:center;}
-        .tuika-content{width:400px;max-width:90vw;background:#11142b;padding:20px;border-radius:16px;}
-        .full{width:100%;}
-        .row{display:grid;grid-template-columns:50% 50%;gap: 12px;margin-top:12px;width:96.5%;}
-        .row2{display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:12px;}
-        .add-btn{white-space: nowrap;min-width: 70px;}
-        input{min-width:0;}
     </style>
 </head>
 <body>
@@ -36,49 +25,12 @@
     </div>
 
     <div id="result"></div>
-
-    <button id="settings-btn" onclick="openSettings()">&#x2699;</button>
-
-    <div id="setting" class="setting"><!-- //設定タブ -->
-        <div class="setting-content">
-            <button class="mclose" onclick="closeSettings()">&#x2715;</button>
-            <h2>設定</h2>
-            <div class="row">
-                <button onclick="opentuika()">追加</button>
-                <button onclick="opensakuzyo()">削除</button>
-            </div>
-            <div class="panel"><button onclick="openpas()" >パスワード変更</button></div>
-        </div>
-    </div>
-
-    <div id="tuika" class="tuika"><!-- //楽曲追加タブ -->
-        <div class="tuika-content">
-            <button class="mclose" onclick="closetuika()">&#x2715;</button>
-            <h2>楽曲追加</h2>
-            <div class="panel">
-                <select id="diff">
-                    <option value="expart">expart</option>
-                    <option value="master">master</option>
-                    <option value="append">append</option>
-                </select>
-            </div>
-            <div class="row">
-                <input class="minput" id="alevel" type="number" placeholder="難易度">
-                <input class="minput" id="asong" placeholder="曲名">
-            </div>
-            <div class="row2">
-                <input placeholder="Full combo">
-                <button class="add-btn">追加</button>
-            </div>
-        </div>
-    </div>
-
 <script>
 let data = [
     [
         ["expert"],
         [30,[["初音ミクの消失",751],["初音ミクの激唱",760],["腐れ外道とチョコレゐト",698],["don't fight the music",772],["foren",696],["MarbleBlue.",718]]],
-        [31,[["What's up? Pop!",902],["ヤミナベ!!!!",769],["人生",720],["おぎゃりないざー",693],["ダイジョウブですか？",747],["メモリア",818],["0.0000034",967],["初音狂奏曲第01番「彗惺」",790],["マシンガンポエムドール",865],["嬢王",633],["ネクラチューンサーカス",690],["エンドマークに希望と涙を添えて",776],["the EnpErroR",611]]],
+        [31,[["What's up? Pop!",902],["ヤミナベ!!!!",769],["人生",720],["おぎゃりないざー",693],["ダイジョウブですか？",747],["メモリア",818],["0.0000034",817],["初音狂奏曲第01番「彗惺」",790],["マシンガンポエムドール",865],["嬢王",633],["ネクラチューンサーカス",690],["エンドマークに希望と涙を添えて",776],["the EnpErroR",611]]],
         [32,[["怪獣になりたい",800]]]
     ],
     [
@@ -108,12 +60,6 @@ const tuika = document.getElementById("tuika");
 const diff = document.getElementById("diff");
 const level = document.getElementById("level");
 const music = document.getElementById("music");
-
-function openSettings(){setting.style.display = "flex";};
-function closeSettings(){setting.style.display = "none";};
-
-function opentuika(){tuika.style.display = "flex";};
-function closetuika(){tuika.style.display = "none";};
 
 let diff_0 = []
 let level_0 = []
