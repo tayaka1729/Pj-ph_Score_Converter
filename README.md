@@ -6,6 +6,6 @@ https://tekeyu1729.github.io/Pj-ph_Score_Converter/
 pi_ph_s.htmlをダウンロードし使用してください<br>
 ※iPhon,iPadでは使用できません、楽曲の更新は原則高難易度の場合のみ行われます
 
-<h3>pythonファイルについて</h3>
+<h2>pythonファイルについて</h2>
 pythonというファイルにpythonとPySimpleGUIを用いて同様に内容を作成したものがあります<br>
 さらにその中にphigros_dat.exeとdata.datが入っているので両方ダウンロードすることによって外部ライブラリのインストールなしで使用できます楽曲追加・削除の初期パスワードは0000です
